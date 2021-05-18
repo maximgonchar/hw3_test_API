@@ -1,8 +1,8 @@
-import cerberus
 import pytest
 import requests
 
 url_random_image_from_all_dogs = 'https://dog.ceo/api/breeds/image/random'
+url_list_all_sub_breed_from_breed = 'https://dog.ceo/api/breed/'
 
 
 @pytest.fixture()
@@ -20,9 +20,19 @@ def status_code_random_dog_image():
 
 
 @pytest.fixture(params=[5, 10, 25, 50])
-def status_response_multiply_random_dog(request):
-    resp = requests.get(url_random_image_from_all_dogs + '/' + f'{request.param}').json()['status']
-    return resp
+def response_multiply_random_dog(request):
+    """Возвращает json-ответ нескольких собак"""
+    resp = requests.get(url_random_image_from_all_dogs + '/' + f'{request.param}').json()
+    if len(resp['message']) == request.param:
+        return resp
+    else:
+        return AssertionError
+
+@pytest.fixture(params=["terrier", "spaniel", "hound"])
+def dog_sub_breed_from_breed(request):
+    """Возвращает статус ответа запроса рандомной суб-породы от указанной породы"""
+    response = requests.get(url_list_all_sub_breed_from_breed + f'{request.param}/images/random').json()['status']
+    return response
 
 
 def pytest_addoption(parser):
@@ -37,4 +47,3 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def base_url(request):
     return request.config.getoption("--url")
-
