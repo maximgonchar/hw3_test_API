@@ -1,5 +1,4 @@
-import cerberus
-from jsonschema import validate, ValidationError
+from jsonschema import validate
 
 
 class TestBreweries:
@@ -41,5 +40,3 @@ class TestBreweries:
         }
         validate(instance=response_brew_by_id_schema, schema=schema)
         assert len(response_brew_by_id_schema) > 0
-
-
