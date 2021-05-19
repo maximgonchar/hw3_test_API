@@ -30,7 +30,8 @@ class TestJsonPlaceholder:
                               ('30', '30'),
                               (1, '1'),
                               ('JSON_b', 'JSON_b')])
-    def test_post_param_creating_resources(self, input_id, output_id, input_title,output_title, input_body, output_body):
+    def test_post_param_creating_resources(self, input_id, output_id, input_title, output_title, input_body,
+                                           output_body):
         res = requests.post(
             url_jsonplaceholder,
             data={'title': input_title, 'body': input_body, 'userId': input_id})
