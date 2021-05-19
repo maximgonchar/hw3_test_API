@@ -18,7 +18,7 @@ class TestApiDog:
     def test_status_multiply_random_dog(self, response_multiply_random_dog):
         assert response_multiply_random_dog['status'] == 'success'
 
-    def test_api_json_schema_random_dog(self, base_url):
+    def test_json_schema_random_dog(self, base_url):
         """Проверка структуры ответа на запрос получения рандомного фото собаки"""
         res = requests.get(base_url + '/breeds/image/random').json()
         schema = {
@@ -32,7 +32,7 @@ class TestApiDog:
         validate(instance=res, schema=schema)
         assert res['status'] == 'success'
 
-    def test_api_multiply_random_dogs(self, response_multiply_random_dog):
+    def test_json_schema_multiply_random_dogs(self, response_multiply_random_dog):
         """Проверка структуры ответа запроса рандомного списка нескольких собак через cerberus"""
         schema = {
             "message": {"type": "list"},

@@ -3,6 +3,8 @@ import requests
 
 url_random_image_from_all_dogs = 'https://dog.ceo/api/breeds/image/random'
 url_list_all_sub_breed_from_breed = 'https://dog.ceo/api/breed/'
+url_breweries = 'https://api.openbrewerydb.org/breweries'
+url_jsonplaceholder = 'https://jsonplaceholder.typicode.com/posts'
 
 
 @pytest.fixture()
@@ -28,12 +30,59 @@ def response_multiply_random_dog(request):
     else:
         return AssertionError
 
+
 @pytest.fixture(params=["terrier", "spaniel", "hound"])
 def dog_sub_breed_from_breed(request):
     """Возвращает статус ответа запроса рандомной суб-породы от указанной породы"""
     response = requests.get(url_list_all_sub_breed_from_breed + f'{request.param}/images/random').json()['status']
     return response
 
+
+@pytest.fixture()
+def list_breweries():
+    resp = requests.get(url_breweries).json()
+    return resp
+
+@pytest.fixture()
+def status_code_breweries():
+    resp = requests.get(url_breweries).status_code
+    return resp
+
+@pytest.fixture(params=[{"by_city":"san_diego"}])
+def response_brew_by_city(request):
+    resp = requests.get(url_breweries, params=request.param).json()
+    return resp
+
+@pytest.fixture(params=[{"by_name":"Ironbark Brewery"}])
+def response_brew_by_name(request):
+    resp = requests.get(url_breweries, params=request.param).json()
+    return resp
+
+@pytest.fixture(params=[{"by_state":"ohio"}])
+def response_brew_by_state(request):
+    resp = requests.get(url_breweries, params=request.param).json()
+    return resp
+
+@pytest.fixture(params=[{"by_type":"large"}])
+def response_brew_by_type(request):
+    resp = requests.get(url_breweries, params=request.param).json()
+    return resp
+
+@pytest.fixture(params=[9754, 9180, 9094, 9180, 9754, 10217])
+def response_brew_by_id_schema(request):
+    resp = requests.get(url_breweries + '/' + f'{request.param}').json()
+    return resp
+
+
+@pytest.fixture()
+def listing_all_resources():
+    resp = requests.get(url_jsonplaceholder)
+    return resp
+
+@pytest.fixture()
+def status_code_all_resources():
+    resp = requests.get(url_jsonplaceholder).status_code
+    return resp
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -47,3 +96,5 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def base_url(request):
     return request.config.getoption("--url")
+
+
