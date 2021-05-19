@@ -10,7 +10,7 @@ url_jsonplaceholder = 'https://jsonplaceholder.typicode.com/posts'
 @pytest.fixture()
 def status_response_random_dog_image():
     """Возвращает текст из ответа в status"""
-    resp = requests.get(url_random_image_from_all_dogs).json()["status"]
+    resp = requests.get(url_random_image_from_all_dogs).json()
     return resp
 
 
@@ -43,30 +43,36 @@ def list_breweries():
     resp = requests.get(url_breweries).json()
     return resp
 
+
 @pytest.fixture()
 def status_code_breweries():
     resp = requests.get(url_breweries).status_code
     return resp
 
-@pytest.fixture(params=[{"by_city":"san_diego"}])
+
+@pytest.fixture(params=[{"by_city": "san_diego"}])
 def response_brew_by_city(request):
     resp = requests.get(url_breweries, params=request.param).json()
     return resp
 
-@pytest.fixture(params=[{"by_name":"Ironbark Brewery"}])
+
+@pytest.fixture(params=[{"by_name": "Ironbark Brewery"}])
 def response_brew_by_name(request):
     resp = requests.get(url_breweries, params=request.param).json()
     return resp
 
-@pytest.fixture(params=[{"by_state":"ohio"}])
+
+@pytest.fixture(params=[{"by_state": "ohio"}])
 def response_brew_by_state(request):
     resp = requests.get(url_breweries, params=request.param).json()
     return resp
 
-@pytest.fixture(params=[{"by_type":"large"}])
+
+@pytest.fixture(params=[{"by_type": "large"}])
 def response_brew_by_type(request):
     resp = requests.get(url_breweries, params=request.param).json()
     return resp
+
 
 @pytest.fixture(params=[9754, 9180, 9094, 9180, 9754, 10217])
 def response_brew_by_id_schema(request):
@@ -75,26 +81,59 @@ def response_brew_by_id_schema(request):
 
 
 @pytest.fixture()
-def listing_all_resources():
-    resp = requests.get(url_jsonplaceholder)
+def listing_all_resources_plhr():
+    resp = requests.get(url_jsonplaceholder).json()
     return resp
 
+
 @pytest.fixture()
-def status_code_all_resources():
+def status_code_all_resources_plhr():
     resp = requests.get(url_jsonplaceholder).status_code
     return resp
+
+
+@pytest.fixture(params=[1, 2, 3, 4, 5, 6, 7])
+def response_getting_resources_plhr(request):
+    resp = requests.get(url_jsonplaceholder + '/' + f'{request.param}').json()
+    return resp
+
+
+@pytest.fixture()
+def creating_resouces_plhr():
+    payload = {'title': 'max_g',
+               'body': 'qa_test',
+               'userId': 200, }
+    resp = requests.post(url_jsonplaceholder, data=payload)
+    resp_json = resp.json()
+    return resp_json
+
+
+@pytest.fixture(params=[0, 10, 200, 250])
+def deleting_resources_plhr(request):
+    resp = requests.delete(url_jsonplaceholder + '/' + f'{request.param}').status_code
+    return resp
+
 
 def pytest_addoption(parser):
     parser.addoption(
         "--url",
-        action="store",
-        default="https://dog.ceo/api",
-        help="This is request url"
+        action='store',
+        help="Укажите ссылку",
+        default="https://ya.ru"
+    )
+
+    parser.addoption(
+        "--status_code",
+        help="Передайте код ошибки",
+        default="200"
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def base_url(request):
     return request.config.getoption("--url")
 
 
+@pytest.fixture
+def response_code(request):
+    return request.config.getoption("--status_code")

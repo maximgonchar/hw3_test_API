@@ -10,7 +10,7 @@ path_random_image = '/breeds/image/random'
 class TestApiDog:
 
     def test_status_random_dog(self, status_response_random_dog_image):
-        assert status_response_random_dog_image == 'success'
+        assert status_response_random_dog_image["status"] == 'success'
 
     def test_status_code_random_dog(self, status_code_random_dog_image):
         assert status_code_random_dog_image == 200
@@ -18,9 +18,9 @@ class TestApiDog:
     def test_status_multiply_random_dog(self, response_multiply_random_dog):
         assert response_multiply_random_dog['status'] == 'success'
 
-    def test_json_schema_random_dog(self, base_url):
+    def test_json_schema_random_dog(self, status_response_random_dog_image):
         """Проверка структуры ответа на запрос получения рандомного фото собаки"""
-        res = requests.get(base_url + '/breeds/image/random').json()
+
         schema = {
             "type": "object",
             "properties": {
@@ -29,8 +29,8 @@ class TestApiDog:
             },
             "required": ["message", "status"]
         }
-        validate(instance=res, schema=schema)
-        assert res['status'] == 'success'
+        validate(instance=status_response_random_dog_image, schema=schema)
+        assert status_response_random_dog_image['status'] == 'success'
 
     def test_json_schema_multiply_random_dogs(self, response_multiply_random_dog):
         """Проверка структуры ответа запроса рандомного списка нескольких собак через cerberus"""
@@ -46,14 +46,13 @@ class TestApiDog:
 
     @pytest.mark.parametrize("count_dogs", [x for x in range(2, 5)])
     @pytest.mark.parametrize("breeds", ["terrier", "spaniel", "hound", "vizsla"])
-    def test_api_multiply_random_dogs(self, base_url, count_dogs, breeds):
+    def test_api_multiply_random_dogs(self, count_dogs, breeds):
         """Проверка рандомного фото нескольких собак"""
-        res = requests.get(base_url + f'/breed/{breeds}/images/random/{count_dogs}')
+        res = requests.get(f'https://dog.ceo/api/breed/{breeds}/images/random/{count_dogs}')
         schema = {
             "message": {"type": "list"},
             "status": {"type": "string"}
         }
         v = cerberus.Validator()
-        print(len(res.json()['message']))
         assert v.validate(res.json(), schema)
         assert len(res.json()['message']) == count_dogs
